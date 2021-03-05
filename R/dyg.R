@@ -42,6 +42,8 @@ dyg<- function(input, output, session, g, noopt=0) {
 #' @export
 dygUI<- function(id, g, noopt=0) {
 	ns<- NS(id)
+	
+	enable_sidebar <- ifelse(noopt,F,T)
 
 	dui<- shinydashboardPlus::box(title=g$gp$title,width=12,closable=FALSE,solidHeader=FALSE,status="info",collapsible=TRUE,
 			sidebar = if (enable_sidebar) {

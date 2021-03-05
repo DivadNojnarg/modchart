@@ -144,7 +144,7 @@ plotlyUI<- function(id, g, noopt=0) {
   
   enable_sidebar <- ifelse(noopt,F,T)
   
-  pchart<- shinydashboardPlux::box(
+  pchart<- shinydashboardPlus::box(
     title=g$gp$title, width=12, closable=FALSE, solidHeader=FALSE, status="info", collapsible=TRUE, 
     sidebar=if (enable_sidebar) {
       boxSidebar(
