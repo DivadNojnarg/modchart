@@ -38,13 +38,20 @@ dyg<- function(input, output, session, g, noopt=0) {
 #' @param id is the caller's id
 #' @param g is the graph/chart to be charted
 #' @param noopt is a toggle that tells chart module not to display options to change chart defaults
+#' @importFrom shinydashboardPlus box
 #' @export
 dygUI<- function(id, g, noopt=0) {
 	ns<- NS(id)
 
-	dui<- boxPlus(title=g$gp$title,width=12,closable=FALSE,solidHeader=FALSE,status="info",collapsible=TRUE,enable_sidebar=ifelse(noopt,F,T),sidebar_start_open=FALSE,
-			sidebar_content=fluidPage(uiOutput(ns('dygoptions'))), 
-			fluidPage(dygraphOutput(ns('dchart')))
+	dui<- shinydashboardPlus::box(title=g$gp$title,width=12,closable=FALSE,solidHeader=FALSE,status="info",collapsible=TRUE,
+			sidebar = if (enable_sidebar) {
+			  boxSidebar(
+			    startOpen = FALSE,
+			    uiOutput(ns('dygoptions')),
+			    id = sprintf("%s-sidebar", id)
+			  )
+			}, 
+			dygraphOutput(ns('dchart'))
 			)
 	dui
 	}

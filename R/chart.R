@@ -3,8 +3,8 @@ f<- reactiveValues(rows_selected=NULL)
 chartinit<- 1
 
 #' @rawNamespace import(shiny, except = c(renderDataTable, dataTableOutput))
-#' @import shinydashboard
-#' @import shinydashboardPlus
+#' @importFrom shinydashboard valueBox dashboardBody valueBoxOutput renderValueBox renderMenu menuItem
+#' menuSubItem tabItems tabItem
 #' @import shinyWidgets
 #' @import shinyBS
 #' @import rpivotTable

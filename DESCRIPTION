@@ -9,10 +9,10 @@ NeedsCompilation: no
 Imports: RColorBrewer, xts, dygraphs, highcharter, jsonlite, lazyeval,
         networkD3, leaflet, lubridate, dplyr, reshape2, rgdal,
         rpivotTable, shiny, shinyBS, shinyWidgets, shinydashboard,
-        shinydashboardPlus, sp, sunburstR, tidyr, treemap, DT,
+        shinydashboardPlus (>= 2.0.0), sp, sunburstR, tidyr, treemap, DT,
         sparkline, collapsibleTree, plotly
 Suggests: modgetxl
 Packaged: 2020-07-11 03:34:31 UTC; cubot
-RoxygenNote: 7.0.1
+RoxygenNote: 7.1.1.9000
 Repository: CRAN
 Date/Publication: 2020-07-13 10:00:03 UTC

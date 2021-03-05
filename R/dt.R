@@ -12,80 +12,89 @@ dtopts<- reactiveValues(heat='none', heatclr="Red", sl='none')
 #' @import DT
 #' @export
 dtbl<- function(input, output, session, g, noopt=0) {
-	ns<- session$ns
-
-	output$dt<- DT::renderDataTable(server=TRUE,{
-
-		dxy<- g$dxy
-		gfdim<- g$gp$gfdim
-		xynam<- names(dxy)
-		nseries<- g$gp$nseries
-
-		dxy[,1]<- as.factor(dxy[,1])
-		if(dtopts$sl != 'none') {
-			dtab<- sparklines(gfdim, nseries, dxy, xynam)
-			}
-		else {
-			if(noopt)
-				dtab<- DT::datatable(dxy, escape=FALSE, class='compact', options=list(pageLength=5))
-			else
-				dtab<- DT::datatable(dxy, escape=FALSE, class='compact', filter='top', options=list(autowidth=FALSE, dom='<"top" Bi>t<"bottom" lp><"clear">', pageLength=10))
-
-			if(dtopts$heat != 'none')
-				dtab<- dtheat(dtopts$heat, dtab, dxy, gfdim, xynam)
-			}
-		dtab
-  		})
-
-	if(!dtobservers) {
-	observeEvent(input$dt_rows_all, {
-		if(cr$dualmode)
-			f$rows_selected<- input$dt_rows_all
-		})
-	observeEvent(input$dt_rows_selected, ignoreNULL=TRUE, ignoreInit=TRUE,{
-	#	setdrill(rg$g, input$dt_rows_selected)
-		})
-
-	observe({
-		if(!is.null(input$heat))
-			dtopts$heat<- input$heat
-		if(!is.null(input$heatclr))
-			dtopts$heatclr<- input$heatclr
-		if(!is.null(input$sl))
-			dtopts$sl<- input$sl
-		})
-	dtobservers<- 1
-	}
-
-	output$dopts<- renderUI({
-		ns<- session$ns
-
-			fluidRow(
-			radioButtons(ns("heat"), "Heatmap", choices= c("None", "Column", "Table"), inline=TRUE, selected=dtopts$heat),
-			radioButtons(ns("heatclr"), "Heatmap Color", choices= c("Red", "Green", "Blue"), inline=TRUE, selected=dtopts$heatclr),
-			selectInput(ns('sl'), 'Sparkline', choices= c("none", "bar", "line", "box"), selected=dtopts$sl)
-			)
-		})
-	}
+  ns<- session$ns
+  
+  output$dt<- DT::renderDataTable(server=TRUE,{
+    
+    dxy<- g$dxy
+    gfdim<- g$gp$gfdim
+    xynam<- names(dxy)
+    nseries<- g$gp$nseries
+    
+    dxy[,1]<- as.factor(dxy[,1])
+    if(dtopts$sl != 'none') {
+      dtab<- sparklines(gfdim, nseries, dxy, xynam)
+    }
+    else {
+      if(noopt)
+        dtab<- DT::datatable(dxy, escape=FALSE, class='compact', options=list(pageLength=5))
+      else
+        dtab<- DT::datatable(dxy, escape=FALSE, class='compact', filter='top', options=list(autowidth=FALSE, dom='<"top" Bi>t<"bottom" lp><"clear">', pageLength=10))
+      
+      if(dtopts$heat != 'none')
+        dtab<- dtheat(dtopts$heat, dtab, dxy, gfdim, xynam)
+    }
+    dtab
+  })
+  
+  if(!dtobservers) {
+    observeEvent(input$dt_rows_all, {
+      if(cr$dualmode)
+        f$rows_selected<- input$dt_rows_all
+    })
+    observeEvent(input$dt_rows_selected, ignoreNULL=TRUE, ignoreInit=TRUE,{
+      #	setdrill(rg$g, input$dt_rows_selected)
+    })
+    
+    observe({
+      if(!is.null(input$heat))
+        dtopts$heat<- input$heat
+      if(!is.null(input$heatclr))
+        dtopts$heatclr<- input$heatclr
+      if(!is.null(input$sl))
+        dtopts$sl<- input$sl
+    })
+    dtobservers<- 1
+  }
+  
+  output$dopts<- renderUI({
+    ns<- session$ns
+    
+    fluidRow(
+      radioButtons(ns("heat"), "Heatmap", choices= c("None", "Column", "Table"), inline=TRUE, selected=dtopts$heat),
+      radioButtons(ns("heatclr"), "Heatmap Color", choices= c("Red", "Green", "Blue"), inline=TRUE, selected=dtopts$heatclr),
+      selectInput(ns('sl'), 'Sparkline', choices= c("none", "bar", "line", "box"), selected=dtopts$sl)
+    )
+  })
+}
 
 #' @title dtblUI
 #' @description User interface to display 'DT' chart type
 #' @param id is the caller's id
 #' @param g is the graph/chart to be charted
 #' @param noopt is a toggle that tells chart module not to display options to change chart defaults
+#' @importFrom shinydashboardPlus box
 #' @export
 dtblUI<- function(id, g, noopt=0) {
-	ns<- NS(id)
-	if(noopt) {
-		dui<- ''
-		}
-	else {
-		dui<- uiOutput(ns('dopts'))
-		}
-
-	boxPlus(title=g$gp$title, width=12, closable=FALSE, solidHeader=FALSE, status="info", collapsible=TRUE, enable_sidebar=ifelse(noopt,F,T), sidebar_start_open=FALSE, 
-		sidebar_content=fluidPage(dui), 
-		fluidPage(DT::dataTableOutput(ns('dt')))
-		)
-	}
+  ns<- NS(id)
+  if(noopt) {
+    dui<- ''
+  }
+  else {
+    dui<- uiOutput(ns('dopts'))
+  }
+  
+  enable_sidebar <- ifelse(noopt,F,T)
+  
+  shinydashboardPlus::box(title=g$gp$title, width=12, closable=FALSE, solidHeader=FALSE, status="info", collapsible=TRUE,
+      sidebar = if (enable_sidebar) {
+        boxSidebar(
+          startOpen = FALSE,
+          dui,
+          id = sprintf("%s-sidebar", id)
+        )
+      }, 
+      DT::dataTableOutput(ns('dt'))
+  )
+}
 
